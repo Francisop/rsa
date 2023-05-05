@@ -113,7 +113,7 @@ def signin(request):
         return Response({"message": "unknown error"})
 
     data = {'token': user_token, 'role': user.role, 'username': user.matric,
-            "full_name": user.full_name}
+            "full_name": user.full_name, "sesssion":user.session}
     return Response(data=data, status=status.HTTP_200_OK)
 
 
