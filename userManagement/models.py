@@ -14,6 +14,7 @@ from rest_framework.authtoken.models import Token
 # import rest_framework.authentication
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from cloudinary.models import CloudinaryField
 
 # User = get_user_model()
 
@@ -59,6 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     full_name = models.CharField(max_length=150, )
     role = models.CharField(max_length=150, choices=ROLES, default="admin")
     matric = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    dp = models.ImageField(upload_to='images')
     session = models.CharField(max_length=150, null=True, blank=True)
     start_date = models.DateTimeField(default=timezone.now)
     is_staff = models.BooleanField(default=False)

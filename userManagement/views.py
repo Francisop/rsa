@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
+from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.response import Response
 from .serializers import UserSerializer
 from rest_framework import status
@@ -13,6 +14,9 @@ from django.contrib.auth.hashers import make_password
 from datetime import datetime
 from django.db.models.functions import Substr
 from django.db.models import Max
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import parser_classes
+import os
 
 User = get_user_model()
 
@@ -49,10 +53,13 @@ def gen_matric():
         return matric
 
 
-
+# @parser_classes((MultiPartParser,))
 class Register(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
     def post(self, request, format=None):
-        # request.data._mutable = True
+        # print(request.data)
+
         user_data = request.data
         print(gen_matric())
         # print(request.data)
@@ -61,8 +68,9 @@ class Register(APIView):
             print(student_pass[1])
             request.data['matric'] = gen_matric()
             request.data['username'] = gen_matric()
-            request.data['session'] = "{}/{}".format(datetime.now().year,datetime.now().year+1)
+            request.data['session'] = "{}/{}".format(datetime.now().year, datetime.now().year + 1)
             request.data['password'] = make_password(student_pass[1])
+            request.data['is_active'] = True
             # request.data['password'] = make_password(request.data['password'])
             # request.data._mutable = False
             serializer = UserSerializer(data=request.data)
@@ -87,9 +95,11 @@ class Register(APIView):
                 return Response(serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['POST'])
 def signin(request):
     data = request.data
+    print(data)
     try:
         username = data['username']
         password = data['password']
@@ -99,23 +109,36 @@ def signin(request):
 
     try:
         user = authenticate(username=username, password=password)
-        print(user.role)
-        # user = User.objects.get(Q(email=email) & Q(password=password))
+        print(user)
+        user_token = user.auth_token.key
+
     except:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response(data={"status": "error", "message": "User doesn't exist"}, status=status.HTTP_401_UNAUTHORIZED)
 
-    try:
-        if user is not None:
-            user_token = user.auth_token.key
-        else:
-            return Response({"message": "User doesn't exist"})
-    except:
-        return Response({"message": "unknown error"})
-
-    data = {'token': user_token, 'role': user.role, 'username': user.matric,
-            "full_name": user.full_name, "sesssion":user.session}
-    return Response(data=data, status=status.HTTP_200_OK)
+    if user.username == "admin":
+        data = {'token': user_token, 'role': user.role,
+                "full_name": user.full_name}
+        return Response(data=data, status=status.HTTP_200_OK)
+    else:
+        data = {'token': user_token, 'role': user.role, 'username': user.matric,
+                "full_name": user.full_name, "sesssion": user.session, "dp": user.dp.url, "active": user.is_active}
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
+class IsAdminUser(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == 'admin'
 
 
+class StudentList(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def get(self, request, format=None):
+        # Retrieve all students from the database
+        students = User.objects.filter(role="student")
+
+        # Serialize the student data
+        serializer = UserSerializer(students, many=True)
+
+        # Return the serialized student data as a response
+        return Response(serializer.data)
