@@ -24,4 +24,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     # path('api-token-auth', views.obtain_auth_token),
     path('', include('userManagement.urls')),
+    path('school/', include('schoolManagement.urls')),
+
 ]

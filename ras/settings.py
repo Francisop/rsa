@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'userManagement',
+    'schoolManagement',
     'rest_framework.authtoken',
     'corsheaders',
     'cloudinary',
