@@ -24,7 +24,7 @@ from schoolManagement.models import SchoolClass, SchoolSession
 
 class CustomAccountManager(BaseUserManager):
 
-    def create_superuser(self, username, full_name, password, **other_fields):
+    def create_superuser(self, username, first_name,last_name, password, **other_fields):
 
         other_fields.setdefault('is_staff', True)
         other_fields.setdefault('is_superuser', True)
@@ -37,9 +37,9 @@ class CustomAccountManager(BaseUserManager):
             raise ValueError(
                 'Superuser must be assigned to is_superuser=True.')
 
-        return self.create_user(username, full_name, password, **other_fields)
+        return self.create_user(username, first_name,last_name, password, **other_fields)
 
-    def create_user(self, username, full_name, password, **other_fields):
+    def create_user(self, username, first_name,last_name, password, **other_fields):
 
         other_fields.setdefault('is_active', True)
 
@@ -47,7 +47,7 @@ class CustomAccountManager(BaseUserManager):
             raise ValueError(_('You must provide a username'))
 
         username = username
-        user = self.model(username=username, full_name=full_name, **other_fields)
+        user = self.model(username=username, first_name=first_name, last_name=last_name, **other_fields)
         user.set_password(password)
         user.save()
         return user
@@ -69,9 +69,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=150,)
     other_name = models.CharField(max_length=150,)
     role = models.CharField(max_length=150, choices=ROLES, default="admin")
-    gender = models.CharField(max_length=150, choices=GENDER,)
-    school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
-    school_session = models.ForeignKey(SchoolSession, on_delete=models.CASCADE)
+    gender = models.CharField(max_length=150, choices=GENDER)
+    school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE, null=True, blank=True)
+    school_session = models.ForeignKey(SchoolSession, on_delete=models.CASCADE, null=True, blank=True)
     matric = models.CharField(max_length=150, null=True, blank=True, unique=True)
     dp = models.ImageField(upload_to='images')
     session = models.CharField(max_length=150, null=True, blank=True)
@@ -82,7 +82,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = CustomAccountManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['full_name']
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
     def __str__(self):
         return self.username
