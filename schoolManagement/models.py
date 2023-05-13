@@ -20,7 +20,7 @@ class SchoolTerm(models.Model):
 
 class SchoolClass(models.Model):
     name = models.CharField(max_length=200)
-    number_of_students = models.IntegerField()
+    number_of_students = models.IntegerField(default=0,null=True,blank=True)
 
     def __str__(self):
         return self.name
