@@ -16,3 +16,23 @@ class SchoolTerm(models.Model):
 
     def __str__(self):
         return self.term_name
+
+
+class SchoolClass(models.Model):
+    name = models.CharField(max_length=200)
+    number_of_students = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
+
+class Teacher(models.Model):
+    full_name = models.CharField(max_length=200)
+    title = models.CharField(max_length=200)
+    first_name = models.CharField(max_length=150, )
+    last_name = models.CharField(max_length=150, )
+    other_name = models.CharField(max_length=150, )
+    school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.other_name

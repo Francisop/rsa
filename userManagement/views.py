@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import BasePermission, IsAuthenticated
@@ -17,6 +18,8 @@ from django.db.models import Max
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import parser_classes
 import os
+
+from schoolManagement.models import SchoolClass, SchoolSession
 
 User = get_user_model()
 
@@ -64,6 +67,14 @@ class Register(APIView):
         print(gen_matric())
         # print(request.data)
         if user_data['role'] == 'student':
+            # class ref
+            class_ref = SchoolClass.objects.get(pk=request.data['school_class'])
+            request.data['school_class'] = class_ref
+            class_ref.number_of_students = class_ref.number_of_students + 1
+            class_ref.save()
+            # sesion ref
+            sess_ref = SchoolSession.objects.get(pk=request.data['school_session'])
+            request.data['school_session'] = sess_ref
             student_pass = user_data['full_name'].split()
             print(student_pass[1])
             request.data['matric'] = gen_matric()
@@ -142,3 +153,27 @@ class StudentList(APIView):
 
         # Return the serialized student data as a response
         return Response(serializer.data)
+
+
+class StudentDetails(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except:
+            raise Http404
+
+    def put(self, request, pk, format=None):
+        # update
+        user = self.get_object(pk)
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        user = self.get_object(pk)
+        user.delete()
+        return Response({"Message": "Student Deleted Successfully"}, status=status.HTTP_200_OK)

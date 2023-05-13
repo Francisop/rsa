@@ -16,6 +16,9 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from cloudinary.models import CloudinaryField
 
+from schoolManagement.models import SchoolClass, SchoolSession
+
+
 # User = get_user_model()
 
 
@@ -56,9 +59,19 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('student', 'student'),
     )
 
+    GENDER = (
+        ('male', 'm'),
+        ('female', 'f'),
+    )
+
     username = models.CharField(_('username'), max_length=20, unique=True, null=True,blank=True)
-    full_name = models.CharField(max_length=150, )
+    first_name = models.CharField(max_length=150,)
+    last_name = models.CharField(max_length=150,)
+    other_name = models.CharField(max_length=150,)
     role = models.CharField(max_length=150, choices=ROLES, default="admin")
+    gender = models.CharField(max_length=150, choices=GENDER,)
+    school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
+    school_session = models.ForeignKey(SchoolSession, on_delete=models.CASCADE)
     matric = models.CharField(max_length=150, null=True, blank=True, unique=True)
     dp = models.ImageField(upload_to='images')
     session = models.CharField(max_length=150, null=True, blank=True)
