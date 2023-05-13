@@ -79,7 +79,7 @@ class TermDetail(APIView):
             raise Http404
 
     def put(self, request, pk, format=None):
-        term = Term.objects.filter(status=True)
+        term = SchoolTerm.objects.filter(status=True)
         if term.exists():
             item = term.first()
             item.status = False  # Update the "completed" field
@@ -97,7 +97,7 @@ class Class(APIView):
     def post(self, request, format=None):
         class_data = request.data
         print(class_data)
-        serializer = SessionSerializer(data=class_data)
+        serializer = ClassSerializer(data=class_data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
