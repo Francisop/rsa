@@ -67,21 +67,25 @@ class Register(APIView):
         print(gen_matric())
         # print(request.data)
         if user_data['role'] == 'student':
+            request.data._mutable = True
+
             # class ref
             class_ref = SchoolClass.objects.get(pk=request.data['school_class'])
-            request.data['school_class'] = class_ref
+            request.data['school_class'] = class_ref.pk
             class_ref.number_of_students = class_ref.number_of_students + 1
             class_ref.save()
             # sesion ref
-            sess_ref = SchoolSession.objects.get(pk=request.data['school_session'])
-            request.data['school_session'] = sess_ref
-            student_pass = user_data['full_name'].split()
-            print(student_pass[1])
+            # sess_ref = SchoolSession.objects.get(pk=int(request.data['session']))
+            # print(f"hello {sess_ref.pk}")
+            request.data['session'] = int(request.data['session'])
+
             request.data['matric'] = gen_matric()
             request.data['username'] = gen_matric()
-            request.data['session'] = "{}/{}".format(datetime.now().year, datetime.now().year + 1)
-            request.data['password'] = make_password(student_pass[1])
+            # request.data['session'] = "{}/{}".format(datetime.now().year, datetime.now().year + 1)
+            request.data['password'] = make_password(user_data['last_name'])
             request.data['is_active'] = True
+            request.data._mutable = False
+
             # request.data['password'] = make_password(request.data['password'])
             # request.data._mutable = False
             serializer = UserSerializer(data=request.data)

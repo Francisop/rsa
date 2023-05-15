@@ -31,7 +31,7 @@ class Teacher(models.Model):
     title = models.CharField(max_length=200)
     first_name = models.CharField(max_length=150, )
     last_name = models.CharField(max_length=150, )
-    other_name = models.CharField(max_length=150, )
+    other_name = models.CharField(max_length=150, null=True, blank=True)
     school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
 
     def __str__(self):

@@ -118,7 +118,8 @@ class Teacher(APIView):
         teacher_data['full_name'] = f"{teacher_data['title']} {teacher_data['first_name']} {teacher_data['last_name']}"
         print(teacher_data)
         class_ref = SchoolClass.objects.get(pk=teacher_data['school_class'])
-        teacher_data['school_class'] = class_ref
+        print(class_ref)
+        teacher_data['school_class'] = class_ref.pk
         serializer = TeacherSerializer(data=teacher_data)
         if serializer.is_valid():
             serializer.save()
