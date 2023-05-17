@@ -2,7 +2,7 @@ from django.http import Http404
 from django.shortcuts import render
 from rest_framework.views import APIView
 
-from .models import SchoolSession, SchoolTerm, SchoolClass
+from .models import SchoolSession, SchoolTerm, SchoolClass, Teacher
 from .serializers import SessionSerializer, TermSerializer, ClassSerializer, TeacherSerializer
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,7 +11,6 @@ from rest_framework import status
 # Create your views here.
 
 class Session(APIView):
-
     def post(self, request, format=None):
         session_data = request.data
         print(session_data)
@@ -35,6 +34,11 @@ class SessionDetail(APIView):
             return SchoolSession.objects.get(pk=pk)
         except:
             raise Http404
+
+    def get(self, request, pk, format=None):
+        session = self.get_object(pk)
+        serializer = SessionSerializer(session)
+        return Response(serializer.data)
 
     def put(self, request, pk, format=None):
         # update
@@ -111,7 +115,20 @@ class Class(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class Teacher(APIView):
+class ClassDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return SchoolClass.objects.get(pk=pk)
+        except:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        class_ = self.get_object(pk)
+        serializer = ClassSerializer(class_)
+        return Response(serializer.data)
+
+
+class TeacherView(APIView):
 
     def post(self, request, format=None):
         teacher_data = request.data
