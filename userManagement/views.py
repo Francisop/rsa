@@ -132,11 +132,13 @@ def signin(request):
 
     if user.username == "admin":
         data = {'token': user_token, 'role': user.role,
-                "full_name": user.full_name}
+                "first_name": user.first_name, "last_name": user.last_name}
         return Response(data=data, status=status.HTTP_200_OK)
     else:
         data = {'token': user_token, 'role': user.role, 'username': user.matric,
-                "full_name": user.full_name, "sesssion": user.session, "dp": user.dp.url, "active": user.is_active}
+                "first_name": user.first_name, "last_name": user.last_name, "gender": user.gender,
+                "other_name": user.other_name, "class": user.school_class, "sesssion": user.session, "dp": user.dp.url,
+                "active": user.is_active}
         return Response(data=data, status=status.HTTP_200_OK)
 
 
