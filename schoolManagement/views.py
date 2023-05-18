@@ -147,7 +147,7 @@ class TeacherView(APIView):
 
     def get(self, request, format=None):
         teacher = Teacher.objects.all()
-        serializer = ClassSerializer(teacher, many=True)
+        serializer = TeacherSerializer(teacher, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
