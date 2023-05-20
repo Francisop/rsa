@@ -56,9 +56,7 @@ def gen_matric():
         return matric
 
 
-# @parser_classes((MultiPartParser,))
 class Register(APIView):
-    # parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, format=None):
         # print(request.data)
@@ -67,7 +65,6 @@ class Register(APIView):
         print(gen_matric())
         # print(request.data)
         if user_data['role'] == 'student':
-            # request.data._mutable = True
 
             # class ref
             class_ref = SchoolClass.objects.get(pk=request.data['school_class'])
@@ -84,10 +81,9 @@ class Register(APIView):
             # request.data['session'] = "{}/{}".format(datetime.now().year, datetime.now().year + 1)
             request.data['password'] = make_password(user_data['last_name'])
             request.data['is_active'] = True
-            # request.data._mutable = False
 
             # request.data['password'] = make_password(request.data['password'])
-            # request.data._mutable = False
+
             serializer = UserSerializer(data=request.data)
             print(serializer)
             if serializer.is_valid():
@@ -99,7 +95,6 @@ class Register(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
         else:
             request.data['password'] = make_password(request.data['password'])
-            # request.data._mutable = False
             serializer = UserSerializer(data=request.data)
             print(serializer)
             if serializer.is_valid():
