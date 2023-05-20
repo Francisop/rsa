@@ -73,7 +73,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE, null=True, blank=True)
     session = models.ForeignKey(SchoolSession, on_delete=models.CASCADE, null=True, blank=True)
     matric = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    dp = models.ImageField(upload_to='images')
+    # dp = models.ImageField(upload_to='images')
     start_date = models.DateTimeField(default=timezone.now)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

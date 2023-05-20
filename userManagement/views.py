@@ -58,7 +58,7 @@ def gen_matric():
 
 # @parser_classes((MultiPartParser,))
 class Register(APIView):
-    parser_classes = (MultiPartParser, FormParser)
+    # parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, format=None):
         # print(request.data)
