@@ -132,7 +132,7 @@ def signin(request):
     else:
         data = {'token': user_token, 'role': user.role, 'username': user.matric,
                 "first_name": user.first_name, "last_name": user.last_name, "gender": user.gender,
-                "other_name": user.other_name, "class": user.school_class, "sesssion": user.session,
+                "other_name": user.other_name, "class": user.school_class.pk, "sesssion": user.session.pk,
                 "active": user.is_active}
         return Response(data=data, status=status.HTTP_200_OK)
 
