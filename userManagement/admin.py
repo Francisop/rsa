@@ -13,7 +13,7 @@ class UserAdminConfig(UserAdmin):
         'is_staff',)
     ordering = ('start_date',)
     list_display = (
-        'username',  'school_class', 'gender', 'other_name', 'last_name', 'first_name', "role", 
+        'username',  'school_class', 'gender', 'other_name', 'last_name', 'session_name', 'class_name', 'first_name', "role",
         "matric", "session", "start_date", 'is_active', 'is_staff')
     fieldsets = (
         (None, {'fields': (

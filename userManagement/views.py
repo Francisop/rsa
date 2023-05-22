@@ -72,9 +72,12 @@ class Register(APIView):
             class_ref.number_of_students = class_ref.number_of_students + 1
             class_ref.save()
             # sesion ref
-            # sess_ref = SchoolSession.objects.get(pk=int(request.data['session']))
+            sess_ref = SchoolSession.objects.get(pk=int(request.data['session']))
             # print(f"hello {sess_ref.pk}")
             request.data['session'] = int(request.data['session'])
+
+            request.data['session_name'] = sess_ref.session_name
+            request.data['class_name'] = class_ref.name
 
             request.data['matric'] = gen_matric()
             request.data['username'] = gen_matric()
