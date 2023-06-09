@@ -43,7 +43,7 @@ class Teacher(models.Model):
         return self.other_name
 
 
-class Result(models.Model):
+class SchoolResult(models.Model):
     doc = models.FileField()
     term = models.ForeignKey(SchoolTerm, on_delete=models.CASCADE)
     school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)

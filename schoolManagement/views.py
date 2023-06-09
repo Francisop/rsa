@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.db.models import Q
 
-from .models import SchoolSession, SchoolTerm, SchoolClass, Teacher
+from .models import SchoolSession, SchoolTerm, SchoolClass, Teacher, SchoolResult
 from .serializers import SessionSerializer, TermSerializer, ClassSerializer, TeacherSerializer, ResultSerializer
 from rest_framework.response import Response
 from rest_framework import status
@@ -178,17 +178,22 @@ def filter_student_by_class(request):
     # term = request.query_params.get('term')
     # session = request.query_params.get('session')
     class_id = request.query_params.get('class')
-
-    filtered_data = User.objects.filter(school_class=class_id)
-    print(filtered_data)
-
-    return Response(data={"data": filtered_data}, status=status.HTTP_200_OK)
+    # Use the value of the 'class' query parameter as needed
+    if class_id:
+        filtered_data = User.objects.filter(school_class=class_id)
+        print(filtered_data)
+        # Perform actions based on the value
+        # ...
+        return Response(data={"data": filtered_data}, status=status.HTTP_200_OK)
+    else:
+        # Handle case when 'class' query parameter is not provided
+        return Response(data={"error": "class id not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class Result(APIView):
 
     def get(self, request, format=None):
-        result = Result.objects.all()
+        result = SchoolResult.objects.all()
         serializer = ResultSerializer(result, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -205,7 +210,8 @@ class Result(APIView):
             user = User.objects.filter(username=document.name)
             if user is not None:
                 if user:
-                    result = Result(user=user, document=document, session=session, school_class=school_class, term=term)
+                    result = SchoolResult(user=user, document=document, session=session, school_class=school_class,
+                                          term=term)
                     print(result)
                     serializer = ResultSerializer(data=result)
                     serializer.is_valid(raise_exception=True)
