@@ -1,14 +1,19 @@
+from django.contrib.auth import get_user_model
 from django.http import Http404
 from django.shortcuts import render
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
+from django.db.models import Q
 
 from .models import SchoolSession, SchoolTerm, SchoolClass, Teacher
-from .serializers import SessionSerializer, TermSerializer, ClassSerializer, TeacherSerializer
+from .serializers import SessionSerializer, TermSerializer, ClassSerializer, TeacherSerializer, ResultSerializer
 from rest_framework.response import Response
 from rest_framework import status
 
-
 # Create your views here.
+
+User = get_user_model()
+
 
 class Session(APIView):
     def post(self, request, format=None):
@@ -49,7 +54,7 @@ class SessionDetail(APIView):
             item.save()
 
         session = self.get_object(pk)
-        serializer = SessionSerializer(session, data=request.data)
+        serializer = SessionSerializer(session, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -90,7 +95,7 @@ class TermDetail(APIView):
             item.save()
 
         term = self.get_object(pk)
-        serializer = TermSerializer(term, data=request.data)
+        serializer = TermSerializer(term, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -161,8 +166,54 @@ class TeacherDetail(APIView):
     def put(self, request, pk, format=None):
         # update
         teacher = self.get_object(pk)
-        serializer = TeacherSerializer(teacher, data=request.data)
+        serializer = TeacherSerializer(teacher, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def filter_student_by_class(request):
+    # term = request.query_params.get('term')
+    # session = request.query_params.get('session')
+    class_id = request.query_params.get('class')
+
+    filtered_data = User.objects.filter(school_class=class_id)
+    print(filtered_data)
+
+    return Response(data={"data": filtered_data}, status=status.HTTP_200_OK)
+
+
+class Result(APIView):
+
+    def get(self, request, format=None):
+        result = Result.objects.all()
+        serializer = ResultSerializer(result, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        # Get the documents from the request
+        term = request.data['term']
+        session = request.data['session']
+        school_class = request.data['school_class']
+        docs = request.FILES.getlist('doc')
+
+        # user = User.objects.get(name=user_name)  # Assuming there's a single user with the given name
+
+        for document in docs:
+            user = User.objects.filter(username=document.name)
+            if user is not None:
+                if user:
+                    result = Result(user=user, document=document, session=session, school_class=school_class, term=term)
+                    print(result)
+                    serializer = ResultSerializer(data=result)
+                    serializer.is_valid(raise_exception=True)
+                    print(serializer)
+                    serializer.save()
+
+            # Create a new document record
+
+            # Save the document record
+
+        return Response(data={"message": "Documents uploaded successfully."}, status=status.HTTP_200_OK)
