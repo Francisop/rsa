@@ -10,6 +10,8 @@ from .serializers import SessionSerializer, TermSerializer, ClassSerializer, Tea
 from rest_framework.response import Response
 from rest_framework import status
 
+from userManagement.serializers import UserSerializer
+
 # Create your views here.
 
 User = get_user_model()
@@ -174,17 +176,14 @@ class TeacherDetail(APIView):
 
 
 @api_view(['GET'])
-def filter_student_by_class(request):
-    # term = request.query_params.get('term')
-    # session = request.query_params.get('session')
-    class_id = request.query_params.get('class')
-    # Use the value of the 'class' query parameter as needed
-    if class_id:
-        filtered_data = User.objects.filter(school_class=class_id)
+def filter_student_by_class(request, pk):
+    if pk:
+        filtered_data = User.objects.filter(school_class=pk)
         print(filtered_data)
-        # Perform actions based on the value
-        # ...
-        return Response(data={"data": filtered_data}, status=status.HTTP_200_OK)
+        serializer = UserSerializer(filtered_data, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     else:
         # Handle case when 'class' query parameter is not provided
         return Response(data={"error": "class id not found"}, status=status.HTTP_404_NOT_FOUND)

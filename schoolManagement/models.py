@@ -31,7 +31,6 @@ class SchoolClass(models.Model):
 
 
 class Teacher(models.Model):
-    full_name = models.CharField(max_length=200)
     title = models.CharField(max_length=200)
     first_name = models.CharField(max_length=150, )
     last_name = models.CharField(max_length=150, )

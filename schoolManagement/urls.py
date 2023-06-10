@@ -14,7 +14,7 @@ urlpatterns = [
     path('class/<int:pk>/', ClassDetail.as_view(), name='class'),
     path('teacher/', TeacherView.as_view(), name='teacher'),
     path('teacher/<int:pk>/', TeacherDetail.as_view(), name='teacher-detail'),
-    path('filter/<int:class>/', filter_student_by_class, name='filter'),
+    path('filter/<int:pk>/', filter_student_by_class, name='filter'),
     path('result/', Result.as_view(), name='result'),
 
 ]
