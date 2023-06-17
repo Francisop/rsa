@@ -18,7 +18,7 @@ class SchoolTerm(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.term_name
+        return str(self.pk)
 
 
 class SchoolClass(models.Model):
@@ -51,4 +51,4 @@ class SchoolResult(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.name
+        return self.user.username

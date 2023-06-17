@@ -1,9 +1,12 @@
+import re
+
 from django.contrib.auth import get_user_model
 from django.http import Http404
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from django.db.models import Q
+import zipfile
+from django.http import HttpResponseBadRequest
 
 from .models import SchoolSession, SchoolTerm, SchoolClass, Teacher, SchoolResult
 from .serializers import SessionSerializer, TermSerializer, ClassSerializer, TeacherSerializer, ResultSerializer
@@ -198,27 +201,37 @@ class Result(APIView):
 
     def post(self, request):
         # Get the documents from the request
-        term = request.data['term']
-        session = request.data['session']
-        school_class = request.data['school_class']
-        docs = request.FILES.getlist('doc')
+        term_data = request.data['term']
+        session_data = request.data['session']
+        school_class_data = request.data['school_class']
+        # docs = request.FILES.getlist('doc')
+        zip_doc = request.FILES['doc']
 
-        # user = User.objects.get(name=user_name)  # Assuming there's a single user with the given name
+        if not zipfile.is_zipfile(zip_doc):
+            return HttpResponseBadRequest('Invalid ZIP file provided.')
 
-        for document in docs:
-            user = User.objects.filter(username=document.name)
-            if user is not None:
-                if user:
-                    result = SchoolResult(user=user, document=document, session=session, school_class=school_class,
-                                          term=term)
-                    print(result)
-                    serializer = ResultSerializer(data=result)
-                    serializer.is_valid(raise_exception=True)
-                    print(serializer)
-                    serializer.save()
+        with zipfile.ZipFile(zip_doc, 'r') as zip_ref:
+            for file_name in zip_ref.namelist():
+                if file_name.endswith('/'):
+                    # Skip directories
+                    continue
 
-            # Create a new document record
+                file_data = zip_ref.read(file_name)
+                pattern = r"([A-Za-z]+)(\d+)_\d+"
+                x = re.search(pattern, file_name)
+                # print(x.group())
 
-            # Save the document record
+                # check if user exists with matric
+                user = User.objects.get(username=x.group())
+                if user is not None:
+                    term = SchoolTerm.objects.get(pk=term_data)
+                    print(term)
+                    session = SchoolSession.objects.get(pk=session_data)
+                    school_class = SchoolClass.objects.get(pk=school_class_data)
+                    result = SchoolResult(session=session, term=term, school_class=school_class, user=user,
+                                          doc=file_name)
+                    result.save()
+                else:
+                    return HttpResponseBadRequest(f'{x.group()} doesnt exists')
 
         return Response(data={"message": "Documents uploaded successfully."}, status=status.HTTP_200_OK)
