@@ -228,10 +228,26 @@ class Result(APIView):
                     print(term)
                     session = SchoolSession.objects.get(pk=session_data)
                     school_class = SchoolClass.objects.get(pk=school_class_data)
-                    result = SchoolResult(session=session, term=term, school_class=school_class, user=user,
-                                          doc=file_name)
+                    result = SchoolResult(session=session, matric=user.matric, term_name=term.term_name,
+                                          session_name=session.session_name, class_name=school_class.name, term=term,
+                                          school_class=school_class, user=user,
+                                          doc=file_name, )
                     result.save()
                 else:
                     return HttpResponseBadRequest(f'{x.group()} doesnt exists')
 
         return Response(data={"message": "Documents uploaded successfully."}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def filter_result_by_class(request, pk):
+    if pk:
+        filtered_data = Result.objects.filter(school_class=pk)
+        print(filtered_data)
+        serializer = ResultSerializer(filtered_data, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    else:
+        # Handle case when 'class' query parameter is not provided
+        return Response(data={"error": "class id not found"}, status=status.HTTP_404_NOT_FOUND)

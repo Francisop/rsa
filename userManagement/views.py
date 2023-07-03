@@ -179,5 +179,8 @@ class StudentDetails(APIView):
 
     def delete(self, request, pk, format=None):
         user = self.get_object(pk)
+        school_class = SchoolClass.objects.get(pk=user.school_class.pk)
+        school_class.number_of_students = school_class.number_of_students - 1
+        school_class.save()
         user.delete()
         return Response({"Message": "Student Deleted Successfully"}, status=status.HTTP_200_OK)

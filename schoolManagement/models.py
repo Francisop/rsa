@@ -45,9 +45,13 @@ class Teacher(models.Model):
 class SchoolResult(models.Model):
     doc = models.FileField()
     term = models.ForeignKey(SchoolTerm, on_delete=models.CASCADE)
+    term_name = models.CharField(max_length=200)
     school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
+    class_name = models.CharField(max_length=200)
     session = models.ForeignKey(SchoolSession, on_delete=models.CASCADE)
+    session_name = models.CharField(max_length=200)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    matric = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
