@@ -242,7 +242,7 @@ class Result(APIView):
 @api_view(['GET'])
 def filter_result_by_class(request, pk):
     if pk:
-        filtered_data = Result.objects.filter(school_class=pk)
+        filtered_data = SchoolResult.objects.filter(school_class=pk)
         print(filtered_data)
         serializer = ResultSerializer(filtered_data, many=True)
 
