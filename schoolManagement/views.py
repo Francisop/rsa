@@ -241,6 +241,7 @@ class Result(APIView):
 
 @api_view(['GET'])
 def filter_result_by_class(request, pk):
+    # something
     if pk:
         filtered_data = SchoolResult.objects.filter(school_class=pk)
         print(filtered_data)
