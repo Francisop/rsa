@@ -193,7 +193,6 @@ def filter_student_by_class(request, pk):
 
 
 class Result(APIView):
-
     def get(self, request, format=None):
         result = SchoolResult.objects.all()
         serializer = ResultSerializer(result, many=True)
@@ -260,3 +259,18 @@ def filter_result_by_class(request, pk):
     else:
         # Handle case when 'class' query parameter is not provided
         return Response(data={"error": "class id not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+def promote_student(request, pk):
+    try:
+        student = User.objects.get(pk=pk)
+        ses = SchoolSession.objects.get(pk=request.data['session'])
+        sclass = SchoolClass.objects.get(pk=request.data['school_class'])
+        student.session = ses
+        student.school_class =  sclass
+        student.save()
+        return Response({'message': 'Student Promoted'})
+    except student.DoesNotExist:
+        return Response({"error": "Item not found"}, status=404) 
+        # If the request method is not POST, return an error response
