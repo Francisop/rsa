@@ -43,10 +43,12 @@ class Teacher(models.Model):
 
 
 class SchoolResult(models.Model):
-    doc = models.FileField()
+    doc = models.FileField(upload_to='rsa/')
     term = models.ForeignKey(SchoolTerm, on_delete=models.CASCADE)
     term_name = models.CharField(max_length=200)
     school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
     class_name = models.CharField(max_length=200)
     session = models.ForeignKey(SchoolSession, on_delete=models.CASCADE)
     session_name = models.CharField(max_length=200)

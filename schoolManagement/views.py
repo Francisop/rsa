@@ -229,14 +229,18 @@ class Result(APIView):
                     session = SchoolSession.objects.get(pk=session_data)
                     school_class = SchoolClass.objects.get(pk=school_class_data)
                     result = SchoolResult(session=session, matric=user.matric, term_name=term.term_name,
-                                          session_name=session.session_name, class_name=school_class.name, term=term,
+                                          session_name=session.session_name,first_name=user.first_name,last_name=user.last_name, class_name=school_class.name, term=term,
                                           school_class=school_class, user=user,
                                           doc=file_name, )
+                    # serializer = ResultSerializer(data=result)
+                    # if serializer.is_valid():
+                    #     serializer.save()
                     result.save()
+
                 else:
                     return HttpResponseBadRequest(f'{x.group()} doesnt exists')
 
-        return Response(data={"message": "Documents uploaded successfully."}, status=status.HTTP_200_OK)
+            return Response(data={"message": "Documents uploaded successfully."}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -244,10 +248,14 @@ def filter_result_by_class(request, pk):
     # something
     if pk:
         filtered_data = SchoolResult.objects.filter(school_class=pk)
-        print(filtered_data)
+        # print(filtered_data)
+        # print(len(filtered_data))
         serializer = ResultSerializer(filtered_data, many=True)
+        data = {"number_of_results":len(filtered_data), "data":serializer.data}
+        print(data)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(data, status=status.HTTP_200_OK)
 
     else:
         # Handle case when 'class' query parameter is not provided

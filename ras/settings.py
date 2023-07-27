@@ -13,9 +13,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import environ
 import os
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 
 env = environ.Env()
 environ.Env.read_env()
@@ -136,6 +133,10 @@ STATIC_URL = 'static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -144,17 +145,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "userManagement.user"
 
-MEDIA_URL = '/media/'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 # adding config
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME" : env('CLOUD_NAME'),
-    "API_KEY" : env('API_KEY'),
-  "API_SECRET" : env('API_SECRET'),
-}
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
