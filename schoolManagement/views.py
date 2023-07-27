@@ -250,11 +250,9 @@ def filter_result_by_class(request, pk):
         # print(filtered_data)
         # print(len(filtered_data))
         serializer = ResultSerializer(filtered_data, many=True)
-        data = {"number_of_results":len(filtered_data), "data":serializer.data}
-        print(data)
-
-
-        return Response(data, status=status.HTTP_200_OK)
+        # data = {"number_of_results":len(filtered_data), "data":serializer.data}
+        # print(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     else:
         # Handle case when 'class' query parameter is not provided
