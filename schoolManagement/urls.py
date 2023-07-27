@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import Term, Session, TermDetail, SessionDetail, Class, TeacherView, TeacherDetail, ClassDetail, \
-    filter_student_by_class, Result, promote_student, filter_result_by_class
+    filter_student_by_class, Result, active, promote_student, filter_result_by_class
 from rest_framework.authtoken.views import obtain_auth_token
 
 app_name = 'schoolManagement'
@@ -18,5 +18,6 @@ urlpatterns = [
     path('result/', Result.as_view(), name='result'),
     path('filter/result/<int:pk>/', filter_result_by_class, name='result-filter'),
     path('promote/<int:pk>/', promote_student, name='promote-student'),
+    path('active/', active, name='active'),
 
 ]

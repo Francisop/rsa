@@ -263,12 +263,24 @@ def filter_result_by_class(request, pk):
 def promote_student(request, pk):
     try:
         student = User.objects.get(pk=pk)
-        ses = SchoolSession.objects.get(pk=request.data['session'])
+        active_session = SchoolSession.objects.get(status='active')
         sclass = SchoolClass.objects.get(pk=request.data['school_class'])
-        student.session = ses
+        student.session = active_session
         student.school_class =  sclass
         student.save()
         return Response({'message': 'Student Promoted'})
     except student.DoesNotExist:
         return Response({"error": "Item not found"}, status=404) 
         # If the request method is not POST, return an error response
+
+
+
+@api_view(['GET'])
+def active(request, pk):
+    active_session = SchoolSession.objects.get(status='active')
+    active_term = SchoolTerm.objects.get(status='active')
+    if  active_session is not None and active_term is not None:
+        return Response({"session": active_session.session_name, "term":active_term.term_name}, status=status.HTTP_200_OK)
+    else:
+        # Handle case when 'class' query parameter is not provided
+        return Response(data={"error": "Session or term has no active data"}, status=status.HTTP_404_NOT_FOUND)
