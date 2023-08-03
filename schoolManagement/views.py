@@ -276,9 +276,9 @@ def promote_student(request, pk):
 
 
 @api_view(['GET'])
-def active(request, pk):
-    active_session = SchoolSession.objects.get(status='active')
-    active_term = SchoolTerm.objects.get(status='active')
+def active(request):
+    active_session = SchoolSession.objects.get(status=True)
+    active_term = SchoolTerm.objects.get(status=True)
     if  active_session is not None and active_term is not None:
         return Response({"session": active_session.session_name, "term":active_term.term_name}, status=status.HTTP_200_OK)
     else:
