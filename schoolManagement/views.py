@@ -204,42 +204,68 @@ class Result(APIView):
         session_data = request.data['session']
         school_class_data = request.data['school_class']
         # docs = request.FILES.getlist('doc')
-        zip_doc = request.FILES['doc']
+        doc = request.FILES['doc']
+        file_name = doc.name.split(".")[0]
+        print(file_name)
+        # check if user exists with matric
+        user = User.objects.get(username=file_name)
+        if user is not None:
+            term = SchoolTerm.objects.get(pk=term_data)
+            session = SchoolSession.objects.get(pk=session_data)
+            school_class = SchoolClass.objects.get(pk=school_class_data)
+            request.data['first_name'] = user.first_name
+            request.data['last_name'] = user.last_name
+            request.data['class_name'] = school_class.name
+            request.data['session_name'] =  session.session_name
+            request.data['term_name'] = term.term_name
+            request.data['user'] = user.pk
+            request.data['matric'] = user.matric
+            serializer = ResultSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if not zipfile.is_zipfile(zip_doc):
-            return HttpResponseBadRequest('Invalid ZIP file provided.')
 
-        with zipfile.ZipFile(zip_doc, 'r') as zip_ref:
-            for file_name in zip_ref.namelist():
-                if file_name.endswith('/'):
-                    # Skip directories
-                    continue
 
-                file_data = zip_ref.read(file_name)
-                pattern = r"([A-Za-z]+)(\d+)_\d+"
-                x = re.search(pattern, file_name)
-                # print(x.group())
+
+
+        # if not zipfile.is_zipfile(zip_doc):
+        #     return HttpResponseBadRequest('Invalid ZIP file provided.')
+
+        # with zipfile.ZipFile(zip_doc, 'r') as zip_ref:
+        #     for file_name in zip_ref.namelist():
+        #         if file_name.endswith('/'):
+        #             # Skip directories
+        #             continue
+
+        #         file_data = zip_ref.read(file_name)
+        #         pattern = r"([A-Za-z]+)(\d+)_\d+"
+        #         x = re.search(pattern, file_name)
+        #         # print(x.group())
 
                 # check if user exists with matric
-                user = User.objects.get(username=x.group())
-                if user is not None:
-                    term = SchoolTerm.objects.get(pk=term_data)
-                    print(term)
-                    session = SchoolSession.objects.get(pk=session_data)
-                    school_class = SchoolClass.objects.get(pk=school_class_data)
-                    result = SchoolResult(session=session, matric=user.matric, term_name=term.term_name,
-                                          session_name=session.session_name,first_name=user.first_name,last_name=user.last_name, class_name=school_class.name, term=term,
-                                          school_class=school_class, user=user,
-                                          doc=file_name, )
-                    # serializer = ResultSerializer(data=result)
-                    # if serializer.is_valid():
-                    #     serializer.save()
-                    result.save()
+            #     user = User.objects.get(username=x.group())
+            #     if user is not None:
+            #         term = SchoolTerm.objects.get(pk=term_data)
+            #         print(term)
+            #         session = SchoolSession.objects.get(pk=session_data)
+            #         school_class = SchoolClass.objects.get(pk=school_class_data)
+            #         result = SchoolResult(session=session, matric=user.matric, term_name=term.term_name,
+            #                               session_name=session.session_name,first_name=user.first_name,last_name=user.last_name, class_name=school_class.name, term=term,
+            #                               school_class=school_class, user=user,
+            #                               doc=file_name, )
+            #         # serializer = ResultSerializer(data=result)
+            #         # if serializer.is_valid():
+            #         #     serializer.save()
+            #         result.save()
 
-                else:
-                    return HttpResponseBadRequest(f'{x.group()} doesnt exists')
+            #     else:
+            #         return HttpResponseBadRequest(f'{x.group()} doesnt exists')
 
-            return Response(data={"message": "Documents uploaded successfully."}, status=status.HTTP_200_OK)
+            # return Response(data={"message": "Documents uploaded successfully."}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
