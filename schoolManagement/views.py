@@ -293,6 +293,7 @@ def promote_student(request, pk):
         sclass = SchoolClass.objects.get(pk=request.data['school_class'])
         student.session = active_session
         student.school_class =  sclass
+        student.class_name = sclass.name
         student.save()
         return Response({'message': 'Student Promoted'})
     except student.DoesNotExist:
