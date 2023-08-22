@@ -289,7 +289,7 @@ def filter_result_by_class(request, pk):
 def promote_student(request, pk):
     try:
         student = User.objects.get(pk=pk)
-        active_session = SchoolSession.objects.get(status='active')
+        active_session = SchoolSession.objects.get(status=True)
         sclass = SchoolClass.objects.get(pk=request.data['school_class'])
         student.session = active_session
         student.school_class =  sclass
